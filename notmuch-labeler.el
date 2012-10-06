@@ -48,7 +48,7 @@
 
 (defun notmuch-labeler-hide (label)
   "Do never show LABEL."
-  (puthash tag "" nml--formats))
+  (puthash label "" nml--formats))
 
 (defun notmuch-labeler-image (label file type)
   "Show LABEL as an image taken from FILE with type TYPE.
