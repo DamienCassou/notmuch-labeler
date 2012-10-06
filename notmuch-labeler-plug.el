@@ -1,8 +1,6 @@
 ;;; notmuch-labeler-plug --- Plugs notmuch-labeler to notmuch interface
 ;;; Commentary:
-
-(require 'notmuch-labeler)
-
+;;
 ;;; Code:
 
 ;;; Show the list of labels of each thread found by the notmuch search

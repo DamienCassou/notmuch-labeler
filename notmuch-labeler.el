@@ -113,7 +113,7 @@ See Info node `(elisp)Mode Line Format' for more information."
    (nml--separate-elems (nml--format-labels labels) ", ")
    ")"))
 
-(provide 'notmuch-labeler)
+(require 'notmuch-labeler-plug)
 
 (provide 'notmuch-labeler)
 
