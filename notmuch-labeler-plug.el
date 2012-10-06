@@ -2,9 +2,8 @@
 ;;; Commentary:
 ;;
 ;;; Code:
-
-;;; Show the list of labels of each thread found by the notmuch search
-;;; engine
+;; Show the list of labels of each thread found by the notmuch search
+;; engine
 (defadvice notmuch-search-insert-field
   (around nml--search-insert-field activate)
   "Change presentation of labels in search results."
