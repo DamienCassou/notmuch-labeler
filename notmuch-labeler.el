@@ -12,14 +12,15 @@
 
 ;; (notmuch-labeler-rename "unread" "new" '(:foreground "blue"))
 ;;
-;; The following replaces the label "Important" with a star icon:
+;; The following replaces the label "draft" by a star icon:
 ;;
-;; (notmuch-labeler-image "Important"
-;;   "/home/cassou/.emacs.d/notmuch-labeler/resources/star.svg" 'svg)
+;;  (notmuch-labeler-image-star "draft")
 ;;
 (require 'notmuch)
 
 ;;; Code:
+
+(defvar nml--location (file-name-directory (locate-library "notmuch-labeler")))
 
 (defgroup notmuch-labeler nil
   "Enhance the way labels are displayed."
@@ -31,6 +32,10 @@
 (defun nml--reset-formats ()
   "Remove all formats that the user associated to labels."
   (setq nml--formats (make-hash-table :test 'equal)))
+
+(defun nml--image-path (image)
+  "Get full path for IMAGE name in the resources/ sub-directory."
+  (expand-file-name (concat "resources/" image) nml--location))
 
 (defun notmuch-labeler-rename (label new-name &rest face)
   "Rename LABEL to NEW-NAME, optionally with a particular FACE."
@@ -57,6 +62,17 @@ TYPE."
 			:ascent center
 			:mask heuristic))
    nml--formats))
+
+(defun notmuch-labeler-provided-image (label image)
+  "Show LABEL as an image provided by notmuch-labeler."
+  (notmuch-labeler-image
+   label
+   (nml--image-path image)
+   (intern (file-name-extension image))))
+
+(defun notmuch-labeler-image-star (label)
+  "Show LABEL as the resources/star.svg image."
+  (notmuch-labeler-provided-image label "star.svg"))
 
 (defun nml--separate-elems (list sep)
   "Return a list with all elements of LIST separated by SEP."
