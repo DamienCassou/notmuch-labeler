@@ -74,6 +74,10 @@ TYPE."
   "Show LABEL as the resources/star.svg image."
   (notmuch-labeler-provided-image label "star.svg"))
 
+(defun notmuch-labeler-image-tag (label)
+  "Show LABEL as the resources/tag.svg image."
+  (notmuch-labeler-provided-image label "tag.svg"))
+
 (defun nml--separate-elems (list sep)
   "Return a list with all elements of LIST separated by SEP."
   (let ((first t)
