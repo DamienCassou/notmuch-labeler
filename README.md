@@ -9,9 +9,9 @@ each label (e.g., with a special font, with a picture, ...).
 Additionally, this package transforms each label into an hyperlink
 to show all emails with this label.
 
-![notmuch-labeler in a notmuch-search buffer](doc/notmuch-search.png)
+![notmuch-labeler in a notmuch-search buffer](https://raw.github.com/DamienCassou/notmuch-labeler/master/doc/notmuch-search.png)
 
-![notmuch-labeler in a notmuch-show buffer](doc/notmuch-show.png)
+![notmuch-labeler in a notmuch-show buffer](https://raw.github.com/DamienCassou/notmuch-labeler/master/doc/notmuch-show.png)
 
 
 # Installation and configuration
