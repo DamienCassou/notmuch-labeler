@@ -1,9 +1,33 @@
 ;;; notmuch-labeler-plug --- Plugs notmuch-labeler to notmuch interface
+;;
+;; Copyright (C) 2012 Damien Cassou
+;;
+;; Author: Damien Cassou <damien.cassou@gmail.com>
+;; Url: https://github.com/DamienCassou/notmuch-labeler
+;; GIT: https://github.com/DamienCassou/notmuch-labeler
+;; Version: 0.1
+;; Created: 2012-10-01
+;; Keywords: emacs package elisp notmuch emails
+;;
+;; This file is NOT part of GNU Emacs.
+;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2, or (at
+;; your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program ; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
 ;;; Commentary:
 ;;
 ;;; Code:
-;; Show the list of labels of each thread found by the notmuch search
-;; engine
 (defadvice notmuch-search-insert-field
   (around nml--search-insert-field activate)
   "Change presentation of labels in search results."

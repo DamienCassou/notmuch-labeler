@@ -1,20 +1,61 @@
-;;; notmuch-labeler.el --- Improve notmuch way of displaying labels and make them interactive
+;;; notmuch-labeler.el --- Improve notmuch way of displaying labels
+;;
+;; Copyright (C) 2012 Damien Cassou
+;;
+;; Author: Damien Cassou <damien.cassou@gmail.com>
+;; Url: https://github.com/DamienCassou/notmuch-labeler
+;; GIT: https://github.com/DamienCassou/notmuch-labeler
+;; Version: 0.1
+;; Created: 2012-10-01
+;; Keywords: emacs package elisp notmuch emails
+;;
+;; This file is NOT part of GNU Emacs.
+;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2, or (at
+;; your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program ; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA.
+;;
 ;;; Commentary:
 ;;
-;; Add the following to your .emacs.d/init.el file:
+;; By default notmuch presents email labels as plain text. This
+;; package improves notmuch by lettings users choose how to present
+;; each label (e.g., with a special font, with a picture, ...).
+;; Additionally, this package transforms each label into an hyperlink
+;; to show all emails with this label.
+;;
+;; To configure this package, add the following to your
+;; .emacs.d/init.el file:
 ;;
 ;; (require 'notmuch-labeler)
-;; (require 'notmuch-labeler-plug)
 ;;
-;; Add more lines that indicate how you want to display each of your
-;; labels. For example, the following renames the label "unread" to
-;; "new" and change the color:
-
-;; (notmuch-labeler-rename "unread" "new" '(:foreground "blue"))
+;; Then, you will get hyperlinks on all your labels. Now, if you want
+;; to change the default presentation of a label, write something like
+;; the following.
 ;;
-;; The following replaces the label "draft" by a star icon:
+;; For example, the following renames the label "unread" to "new" and
+;; changes the label color to blue:
 ;;
-;;  (notmuch-labeler-image-star "draft")
+;; (notmuch-labeler-rename "unread" "new" ':foreground "blue")
+;;
+;; This replaces the label "important" by a tag picture:
+;;
+;; (notmuch-labeler-image-tag "important")
+;;
+;; This simply hides the label "unread" (there is no need to show this
+;; label because unread messages are already in bold):
+;;
+;; (notmuch-labeler-hide "unread")
 ;;
 (require 'notmuch)
 
