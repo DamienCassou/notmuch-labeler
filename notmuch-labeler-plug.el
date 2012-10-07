@@ -28,6 +28,9 @@
 ;;; Commentary:
 ;;
 ;;; Code:
+
+(require 'cl)
+
 (defadvice notmuch-search-insert-field
   (around nml--search-insert-field activate)
   "Change presentation of labels in search results."
@@ -47,13 +50,16 @@
   "Return the thread labels as returned by notmuch in RESULT."
   (plist-get result :tags))
 
-;;; Show the list of labels in the header line of notmuch show
-
 (defadvice notmuch-show-build-buffer
   (after nml--show-build-buffer-update-header activate)
-  "Make the head-line show the labels."
-  (nml--update-header-line
-   (second (split-string notmuch-show-thread-id ":"))))
+  "Make the header-line of `notmuch-show' present the labels."
+  (nml--update-header-line (nml--show-thread-id)))
+
+(defun nml--show-thread-id ()
+  "Return the currently visited thread id."
+  ;; `notmuch-show-thread-id' is of the form "thread:00001212" so we
+  ;; have to extract the second part.
+  (second (split-string notmuch-show-thread-id ":")))
 
 (defun nml--update-header-line (thread-id)
   "Add the labels of THREAD-ID to header line."
@@ -70,7 +76,8 @@ thread."
   (let ((labels-list
 	 (notmuch-query-map-threads
 	  (lambda (msg) (plist-get msg :tags))
-	  (notmuch-query-get-threads `(,(concat "thread:" thread-id))))))
+	  (notmuch-query-get-threads
+	   `(,(concat "thread:" thread-id))))))
     (case (length labels-list)
       (0 nil)
       (1 (car labels-list))
@@ -95,7 +102,7 @@ thread."
 	   (notmuch-show-get-message-properties)))))))))
 
 (defun nml--message-labels-from-properties (properties)
-  "Find the labels of the message from its PROPERTIES."
+  "Find the labels of a message from its PROPERTIES."
   (plist-get properties :tags))
 
 (provide 'notmuch-labeler-plug)
