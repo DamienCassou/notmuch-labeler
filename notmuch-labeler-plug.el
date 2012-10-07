@@ -65,7 +65,9 @@
   "Add the labels of THREAD-ID to header line."
   (setq header-line-format
 	(cons
-	 header-line-format
+	 ;; subject of the thread:
+	 (notmuch-show-strip-re (notmuch-show-get-subject))
+	 ;; followed by labels:
 	 (nml--present-labels
 	  (nml--thread-labels-from-id thread-id)))))
 
@@ -81,25 +83,39 @@ thread."
     (case (length labels-list)
       (0 nil)
       (1 (car labels-list))
-      (otherwise (reduce 'union labels-list)))))
+      (otherwise (reduce (lambda (l1 l2)
+			   (union l1 l2 :test 'string=))
+			 labels-list)))))
 
-;;; Show the list of labels on each email of notmuch show
-
-(add-hook 'notmuch-show-hook 'nml--show-headerline-replace t)
 
 (defun nml--show-headerline-replace ()
-  "Replace the default tag representation with our own."
-  (ignore-errors
-    (notmuch-show-mapc
-     (lambda ()
-       (move-end-of-line nil)
-       ;; Remove current list of tags
-       (zap-to-char -1 ?\()
-       (insert
-	(format-mode-line
-	 (nml--present-labels
-	  (nml--message-labels-from-properties
-	   (notmuch-show-get-message-properties)))))))))
+  "Replace the default label representation in `notmuch-show'."
+  (notmuch-show-mapc ;; for each email in notmuch-show...
+   'nml--show-headerline-replace-one))
+
+(defun nml--show-headerline-replace-one ()
+  "Replace the default label representation of one email."
+  (save-excursion
+    (when (re-search-forward " ([^()]*)$" (line-end-position) t)
+      (let ((inhibit-read-only t))
+	(goto-char (match-beginning 0))
+	(delete-region (match-beginning 0) (match-end 0))
+	(insert
+	 (format-mode-line
+	  (nml--present-labels
+	   (nml--message-labels-from-properties
+	    (notmuch-show-get-message-properties)))))))))
+
+(defadvice notmuch-show-update-tags
+  (around nml--show-update-tags activate)
+  "Change presentation of labels in each email."
+  (save-excursion
+    (goto-char (notmuch-show-message-top))
+    (nml--show-headerline-replace-one))
+  (nml--update-header-line (nml--show-thread-id)))
+
+;; Show the list of labels on each email of notmuch show
+(add-hook 'notmuch-show-hook 'nml--show-headerline-replace t)
 
 (defun nml--message-labels-from-properties (properties)
   "Find the labels of a message from its PROPERTIES."
