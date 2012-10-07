@@ -57,15 +57,16 @@
 ;;
 ;; (notmuch-labeler-hide "unread")
 ;;
+;;; Code:
+;;
+;; In this code, 'nml--' is used as a prefix for all private symbols
+;; (variables and functions). Public symbols are prefixed with
+;; 'notmuch-labeler'.
 (require 'notmuch)
 
-;;; Code:
-
-(defvar nml--location (file-name-directory (locate-library "notmuch-labeler")))
-
-(defgroup notmuch-labeler nil
-  "Enhance the way labels are displayed."
-  :group 'notmuch)
+(defun nml--location ()
+  "Return the folder where this package is located."
+  (file-name-directory (locate-library "notmuch-labeler")))
 
 (defvar nml--formats (make-hash-table :test 'equal)
   "Map a label to a property list that visually represents it.")
@@ -76,36 +77,54 @@
 
 (defun nml--image-path (image)
   "Get full path for IMAGE name in the resources/ sub-directory."
-  (expand-file-name (concat "resources/" image) nml--location))
+  (expand-file-name image
+		    (expand-file-name "resources" (nml--location))))
+
+(defun nml--change-fomat (label format)
+  "Set that LABEL must be displayed using FORMAT.
+
+Instead of this function, use one of the higher-level ones like
+`notmuch-labeler-rename', `notmuch-labeler-hide',
+`notmuch-labeler-image'."
+  (puthash label format nml--formats))
 
 (defun notmuch-labeler-rename (label new-name &rest face)
-  "Rename LABEL to NEW-NAME, optionally with a particular FACE."
-  (puthash
-   label
-   (if face
+  "Rename LABEL to NEW-NAME, optionally with a particular FACE.
+
+Use this function like this:
+
+  (notmuch-labeler-rename \"draft\" \"Draft\" :foreground \"red\")
+
+This will present the draft label with a capital and in red."
+  (nml--change-fomat label
+   (if
+       face
        `(:propertize ,new-name face ,face)
-     new-name)
-   nml--formats))
+     new-name)))
 
 (defun notmuch-labeler-hide (label)
   "Do never show LABEL."
-  (puthash label "" nml--formats))
+  (nml--change-fomat label ""))
 
 (defun notmuch-labeler-image (label file type)
   "Show LABEL as an image taken from FILE with type TYPE.
+
 See Info node `(elisp)Image Formats' for possible values for
-TYPE."
-  (puthash
+TYPE (e.g., 'svg and 'png).
+
+notmuch-labeler comes with a set of predefined pictures that you
+can use by calling a dedicated function like
+`notmuch-labeler-image-star' and `notmuch-labeler-image-tag'."
+  (nml--change-fomat
    label
    `(:propertize ,label display
 		 (image :type ,type
 			:file ,file
 			:ascent center
-			:mask heuristic))
-   nml--formats))
+			:mask heuristic))))
 
-(defun notmuch-labeler-provided-image (label image)
-  "Show LABEL as an image provided by notmuch-labeler."
+(defun nml--provided-image (label image)
+  "Show LABEL as IMAGE provided by notmuch-labeler."
   (notmuch-labeler-image
    label
    (nml--image-path image)
@@ -113,11 +132,11 @@ TYPE."
 
 (defun notmuch-labeler-image-star (label)
   "Show LABEL as the resources/star.svg image."
-  (notmuch-labeler-provided-image label "star.svg"))
+  (nml--provided-image label "star.svg"))
 
 (defun notmuch-labeler-image-tag (label)
   "Show LABEL as the resources/tag.svg image."
-  (notmuch-labeler-provided-image label "tag.svg"))
+  (nml--provided-image label "tag.svg"))
 
 (defun nml--separate-elems (list sep)
   "Return a list with all elements of LIST separated by SEP."
@@ -149,8 +168,10 @@ See Info node `(elisp)Mode Line Format' for more information."
     `(:propertize ,format ,@(nml--link-properties target)))))
 
 (defun nml--link-properties (target)
-  "Return a property list for a link to TARGET."
-(lexical-let ((target target)) ;; lexical binding so that next
+  "Return a property list for a link to TARGET.
+
+TARGET is a label string."
+  (lexical-let ((target target)) ;; lexical binding so that next
 				 ;; lambda becomes a closure
     (let ((map (make-sparse-keymap))
 	  (goto (lambda ()
@@ -160,7 +181,7 @@ See Info node `(elisp)Mode Line Format' for more information."
       (define-key map [follow-link] 'mouse-face) ;; handle mouse-1
       (define-key map (kbd "RET") goto)
       (list 'mouse-face '(highlight) ;
-	    'help-echo "Search other messages like this" ;
+	    'help-echo (concat target ": Search other messages like this") ;
 	    'keymap map))))
 
 (defun nml--goto-target (target)
