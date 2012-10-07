@@ -1,7 +1,8 @@
 Emacs notmuch-labeler
 ==========
 
-notmuch-labeler improves notmuch way of displaying labels.
+notmuch-labeler improves notmuch way of displaying labels through
+fonts, pictures, and hyperlinks.
 
 By default notmuch presents email labels as plain text. This
 package improves notmuch by lettings users choose how to present
