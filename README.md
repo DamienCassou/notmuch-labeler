@@ -17,6 +17,9 @@ to show all emails with this label.
 
 # Installation and configuration
 
+This package is available through the Emacs packaging system in the
+[Marmalade repository](http://marmalade-repo.org/).
+
 To configure this package, add the following to your init file:
 
     (require 'notmuch-labeler)
