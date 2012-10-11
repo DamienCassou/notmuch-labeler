@@ -124,6 +124,19 @@ thread."
   "Return the folders containing emails with MAIL-ID."
   (nmlf--query-folders (concat "id:" mail-id)))
 
+(defun nmlf--goto-folder (folder)
+  "Search and list emails in FOLDER."
+  (notmuch-search (concat "folder:\"" folder "\"")))
+
+(defun nmlf--result-folders (result)
+  (if (plist-member result :id)
+      (nmlf--email-folders (plist-get result :id))
+    (nmlf--thread-folders (plist-get result :thread))))
+
+(defun nmlf--result-in-folder-p (result folder)
+  "Check that RESULT contains at least an email in FOLDER."
+  (cl-member folder (nmlf--result-folders result) :test 'string=))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; The following definitions erase existing ones of notmuch-label
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -132,16 +145,13 @@ thread."
   (around nmlf--goto-folder activate)
   "REDEFINTION: Show the list of mails in folder TARGET."
   (let ((target (ad-get-arg 0)))
-    (notmuch-search (concat "folder:\"" target "\""))))
+    (nmlf--goto-folder target)))
 
 (defadvice nml--thread-labels-from-search
   (around nmlf--thread-folders-from-search activate)
   "REDEFINITION: Return the thread folders from RESULT."
   (let ((result (ad-get-arg 0)))
-    (setq ad-return-value
-	  (if (plist-member result :id)
-	      (nmlf--email-folders (plist-get result :id))
-	    (nmlf--thread-folders (plist-get result :thread))))))
+    (setq ad-return-value (nmlf--result-folders result))))
 
 (defadvice nml--thread-labels-from-id
   (around nmlf--thread-folders-from-id activate)
