@@ -60,7 +60,7 @@ subdirectory of `notmuch-labeler-folder-base'."
 
 (defun nmlf--folder-p (folder)
   "Check that the FOLDER is an email folder in `nmlf--base'."
-  (let ((full-folder (expand-file-name folder (nmlf--base))))
+  (let ((full-folder (nmlf--folder folder)))
     (and
      (file-directory-p full-folder)
      (file-directory-p (expand-file-name "cur" full-folder))
