@@ -41,14 +41,23 @@
       (insert
        (format-mode-line
 	(nml--present-labels
-	 (nml--thread-labels-from-search result)))))
+	 (nml--thread-labels-from-search
+	  result
+	  notmuch-search-query-string)))))
      ;; in all other cases use the default implementation in the
      ;; advised function
      (t ad-do-it))))
 
-(defun nml--thread-labels-from-search (result)
+(defun nml--thread-labels-from-search (result &optional query)
   "Return the thread labels as returned by notmuch in RESULT."
-  (plist-get result :tags))
+  ;; only shows the labels that are not directly searched
+  (let ((all-labels (plist-get result :tags)))
+    (if (and query notmuch-labeler-hide-known-labels)
+	(set-difference
+	 all-labels
+	 (nml--extract-labels-from-query
+	  notmuch-search-query-string) :test 'string=)
+      all-labels)))
 
 (defadvice notmuch-show-build-buffer
   (after nml--show-build-buffer-update-header activate)

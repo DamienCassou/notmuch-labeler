@@ -64,6 +64,22 @@
 ;; 'notmuch-labeler'.
 (require 'notmuch)
 
+(defgroup notmuch-labeler nil
+  "Improve notmuch way of displaying labels."
+  :group 'notmuch)
+
+(defcustom notmuch-labeler-hide-known-labels nil
+  "Hide labels that are necessarily present in search buffer.
+When set to t, this variable makes search buffers much cleaner by
+not showing the labels that are necessarily present because they
+are searched for. This only applies to `notmuch-search' buffers.
+For example, if you are searching for \"tag:inbox\", the tag
+\"inbox\" will not be shown in the notmuch search buffer and thus
+only important tags will be shown. This is the choice Gmail
+engineers did and I like it that way."
+  :type 'boolean
+  :group 'notmuch-labeler)
+
 (defun nml--location ()
   "Return the folder where this package is located."
   (file-name-directory (locate-library "notmuch-labeler")))
@@ -194,6 +210,16 @@ TARGET is a label string."
    " ("
    (nml--separate-elems (nml--format-labels labels) ", ")
    ")"))
+
+(defun nml--extract-labels-from-query (query)
+  "Return the particular labels being searched for in QUERY.
+Return nil if no particular label is being searched."
+  ;; Below code is far from being complete, please check failing unit
+  ;; tests in notmuch-labeler-test is your are looking for TODOs.
+  (when (string-match "tag:\\([^ ]*\\)" query)
+    (let ((res (match-string 1 query)))
+      (when res
+	(list res)))))
 
 (require 'notmuch-labeler-plug)
 
