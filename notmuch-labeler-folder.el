@@ -107,8 +107,8 @@ buffer."
 
 (defun nmlf--files-folders (files)
   "Return the folders containing FILES."
-  (cl-remove-duplicates
-   (mapcar 'nmlf--folder files)
+  (remove-duplicates
+   (mapcar 'nmlf--file-folder files)
    :test 'string-equal))
 
 (defun nmlf--query-folders (query)
@@ -136,7 +136,7 @@ thread."
 
 (defun nmlf--result-in-folder-p (result folder)
   "Check that RESULT contains at least an email in FOLDER."
-  (cl-member folder (nmlf--result-folders result) :test 'string=))
+  (member* folder (nmlf--result-folders result) :test 'string=))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; The following definitions erase existing ones of notmuch-label
