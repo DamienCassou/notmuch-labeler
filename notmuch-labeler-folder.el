@@ -51,6 +51,13 @@ containing emails."
   "Return the full path of the email folder NAME."
   (expand-file-name name (nmlf--base)))
 
+(defun nmlf--file-folder (file)
+  "Return the folder containing the email in FILE.
+FILE must be a full pathname and FILE must be within a
+subdirectory of `notmuch-labeler-folder-base'."
+  (let ((path (file-relative-name file (nmlf--base))))
+    (substring path 0 (string-match "/" path))))
+
 (defun nmlf--folder-p (folder)
   "Check that the FOLDER is an email folder in `nmlf--base'."
   (let ((full-folder (expand-file-name folder (nmlf--base))))
@@ -67,12 +74,6 @@ containing emails."
 		  '("." ".." ".notmuch")
 		  :test #'string-equal)))
 
-(defun nmlf--folder (file)
-  "Return the folder containing the email in FILE.
-FILE must be a full pathname and FILE must be within a
-subdirectory of `notmuch-labeler-folder-base'."
-  (let ((path (file-relative-name file (nmlf--base))))
-    (substring path 0 (string-match "/" path))))
 
 (defun nmlf--search-files (query)
   "Show in a JSON buffer the files matching QUERY.
