@@ -5,6 +5,7 @@
 ;; Author: Damien Cassou <damien.cassou@gmail.com>
 ;; Url: https://github.com/DamienCassou/notmuch-labeler
 ;; GIT: https://github.com/DamienCassou/notmuch-labeler
+;; Package-Requires: ((notmuch "0"))
 ;; Version: 0.1
 ;; Created: 2012-10-01
 ;; Keywords: emacs package elisp notmuch emails
